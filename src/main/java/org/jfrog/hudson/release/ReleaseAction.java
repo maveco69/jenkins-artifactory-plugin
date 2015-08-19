@@ -83,6 +83,7 @@ public abstract class ReleaseAction<P extends AbstractProject & BuildableItem,
     String stagingComment;
     boolean createReleaseBranch;
     String releaseBranch;
+    String branch;
     private Class<W> wrapperClass;
 
     public ReleaseAction(P project, Class<W> wrapperClass) {
@@ -198,6 +199,10 @@ public abstract class ReleaseAction<P extends AbstractProject & BuildableItem,
 
     public String getReleaseBranch() {
         return releaseBranch;
+    }
+
+    public String getBranch() {
+        return branch;
     }
 
     public String getStagingComment() {
@@ -322,6 +327,9 @@ public abstract class ReleaseAction<P extends AbstractProject & BuildableItem,
         if (req.getParameter("releaseBranch") != null) {
             releaseBranch = req.getParameter("releaseBranch");
         }
+        if (req.getParameter("branch") != null) {
+            branch = req.getParameter("branch");
+        }
         if (req.getParameter("nextDevelCommitComment") != null) {
             nextDevelCommitComment = req.getParameter("nextDevelCommitComment");
         }
@@ -357,6 +365,7 @@ public abstract class ReleaseAction<P extends AbstractProject & BuildableItem,
             releaseBranch = req.getParameter("releaseBranch");
         }
 
+        branch = req.getParameter("branch");
         stagingRepositoryKey = req.getParameter("repositoryKey");
         stagingComment = req.getParameter("stagingComment");
     }
@@ -482,6 +491,7 @@ public abstract class ReleaseAction<P extends AbstractProject & BuildableItem,
         nextDevelCommitComment = defaultVcsConfig.getNextDevelopmentVersionComment();
         createReleaseBranch = defaultVcsConfig.isUseReleaseBranch();
         releaseBranch = defaultVcsConfig.getReleaseBranchName();
+        branch = defaultVcsConfig.getBranch();
         stagingRepositoryKey = defaultPromotionConfig.getTargetRepository();
         stagingComment = defaultPromotionConfig.getComment();
 
@@ -550,6 +560,7 @@ public abstract class ReleaseAction<P extends AbstractProject & BuildableItem,
                 Map<String, Object> vcsConfig = (Map<String, Object>) stagingStrategy.get("vcsConfig");
                 defaultVcsConfig = new VcsConfig(((Boolean) vcsConfig.get("useReleaseBranch")),
                         getStagingConfigAsString(vcsConfig, "releaseBranchName"),
+                        getStagingConfigAsString(vcsConfig, "branch"),
                         ((Boolean) vcsConfig.get("createTag")),
                         getStagingConfigAsString(vcsConfig, "tagUrlOrName"),
                         getStagingConfigAsString(vcsConfig, "tagComment"),

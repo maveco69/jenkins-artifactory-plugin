@@ -120,6 +120,17 @@ public class MavenReleaseWrapper extends BuildWrapper {
     }
 
     @Override
+    public void preCheckout(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        final ReleaseAction releaseAction = build.getAction(ReleaseAction.class);
+        if (releaseAction != null) {
+            log(listener, "Adding branch to the job parameters: origin/" + releaseAction.getBranch());
+            build.addAction(new ParametersAction(new StringParameterValue("branch", releaseAction.getBranch())));
+            build.getBuildVariables().put("branch", releaseAction.getBranch());
+        }
+        super.preCheckout(build, launcher, listener);
+    }
+
+    @Override
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
 
@@ -133,6 +144,7 @@ public class MavenReleaseWrapper extends BuildWrapper {
         log(listener, "Release build triggered");
 
         final MavenModuleSetBuild mavenBuild = (MavenModuleSetBuild) build;
+
         scmCoordinator = AbstractScmCoordinator.createScmCoordinator(build, listener, releaseAction);
         scmCoordinator.prepare();
         if (!releaseAction.getVersioning().equals(ReleaseAction.VERSIONING.NONE)) {
@@ -188,6 +200,11 @@ public class MavenReleaseWrapper extends BuildWrapper {
                     }
                 } catch (Exception e) {
                     listener.getLogger().println("Failure in post build SCM action: " + e.getMessage());
+                    StackTraceElement[] stackTrace = e.getStackTrace();
+                    for (StackTraceElement stack : stackTrace) {
+                        listener.getLogger().println(stack.toString());
+                    }
+
                     debuggingLogger.log(Level.FINE, "Failure in post build SCM action: ", e);
                     return false;
                 }

@@ -55,16 +55,10 @@
 
                     <f:section title="${%VCS Configuration}">
                         <j:if test="${it.isGit()}">
-                            <f:optionalBlock field="createReleaseBranch" name="createReleaseBranch"
-                                             help="/plugin/artifactory/help/release/ReleaseAction/help-createReleaseBranch.html"
-                                             title="Use release branch"
-                                             checked="${it.defaultVcsConfig.useReleaseBranch}"
-                                             inline="true">
-                                <f:entry field="releaseBranch" title="Release branch"
-                                         help="/plugin/artifactory/help/release/ReleaseAction/help-releaseBranch.html">
-                                    <f:textbox name="releaseBranch" value="${it.defaultVcsConfig.releaseBranchName}"/>
-                                </f:entry>
-                            </f:optionalBlock>
+                            <f:entry field="branch" title="[Softplan] Releasing branch"
+                                     help="/plugin/artifactory/help/release/ReleaseAction/help-branchForRelease.html">
+                                <f:textbox name="branch" value="${it.defaultVcsConfig.branch}"/>
+                            </f:entry>
                         </j:if>
                         <f:optionalBlock field="createVcsTag" name="createVcsTag"
                                          help="/plugin/artifactory/help/release/ReleaseAction/help-createVcsTag.html"
@@ -87,26 +81,6 @@
                                         default="${it.defaultVcsConfig.nextDevelopmentVersionComment}"/>
                         </f:entry>
                     </f:section>
-                    <f:block>
-                        <hr/>
-                    </f:block>
-                    <f:entry title="${%Repository to stage the release to} (requires Artifactory Pro)"
-                             field="repositoryKey"
-                             help="/plugin/artifactory/help/release/ReleaseAction/help-stagingRepository.html">
-                        <select class="setting-input" name="repositoryKey"
-                                disabled="${!it.artifactoryPro ? 'disabled' : null}">
-                            <j:forEach var="r" items="${it.repositoryKeys}">
-                                <f:option selected="${r==it.defaultPromotionConfig.targetRepository}"
-                                          value="${r}">${r}
-                                </f:option>
-                            </j:forEach>
-                        </select>
-                    </f:entry>
-                    <f:entry field="stagingComment" title="Staging comment"
-                             help="/plugin/artifactory/help/release/PromoteBuildAction/help-stagingComment.html">
-                        <f:textbox name="stagingComment" value="${it.defaultPromotionConfig.comment}"
-                                   disabled="${!it.artifactoryPro ? 'disabled' : null}"/>
-                    </f:entry>
                     <tr>
                         <td colspan="3">
                             <f:submit value="${%Build and Release to Artifactory}"/>
